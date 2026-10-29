@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1D3F7A">
+<title>Labo des algorithmes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+:root{
+  --ciel:#1D3F7A;
+  --ciel-vif:#2D5BB0;
+  --fond:#F2F5F9;
+  --surface:#FFFFFF;
+  --encre:#15233F;
+  --encre-douce:#55637C;
+  --trait:#D6DDE8;
+  --signal:#FFC21A;
+  --vert:#23895C;
+  --jaune:#E0A100;
+  --rouge:#CF3A3A;
+  --billet-encre:#15233F;
+  --billet-douce:#5F6B80;
+  --rayon:14px;
+  --texte:"Barlow", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --etroit:"Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --fond:#0E1729;
+    --surface:#16223A;
+    --encre:#E6ECF5;
+    --encre-douce:#A2AFC6;
+    --trait:#2A3A5A;
+    --ciel-vif:#8DB2F2;
+    --vert:#3DBA82;
+    --jaune:#F2B930;
+    --rouge:#F07070;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--fond);color:var(--encre);font-family:var(--texte);font-size:17px;line-height:1.45}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+button{font-family:inherit}
+
+/* En-tête */
+.entete{background:var(--ciel);color:#fff;padding:18px 16px 0}
+.entete-int{max-width:640px;margin:0 auto}
+.entete h1{font:700 1.9rem/1.05 var(--etroit);margin:0 0 10px}
+.onglets{display:flex;gap:4px}
+.onglets button{flex:1;font-size:1rem;font-weight:600;color:#C9D7F0;background:transparent;border:0;border-bottom:3px solid transparent;padding:10px 4px 11px;cursor:pointer}
+.onglets button[aria-selected="true"]{color:#fff;border-bottom-color:var(--signal)}
+
+main{max-width:640px;margin:0 auto;padding:20px 16px 56px}
+.intro{margin:0 0 14px}
+
+/* Règle de Syracuse */
+.regles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 18px}
+.regles p{margin:0;background:var(--surface);border:1px solid var(--trait);border-radius:10px;padding:8px 8px 9px;font-size:.88rem;line-height:1.25;color:var(--encre-douce)}
+.regles b{display:block;font:700 1.15rem var(--etroit);color:var(--encre)}
+
+/* Saisie */
+.saisie label{display:block;font-weight:600;margin-bottom:6px}
+.ligne{display:flex;gap:8px}
+.ligne input{flex:1;min-width:0;font:600 1.45rem var(--etroit);padding:8px 12px;border:2px solid var(--trait);border-radius:10px;background:var(--surface);color:var(--encre)}
+.ligne input:focus{outline:none;border-color:var(--ciel-vif)}
+.btn{font-size:1.05rem;font-weight:700;background:var(--signal);color:#15233F;border:0;border-radius:10px;padding:0 20px;cursor:pointer}
+.btn:active{transform:translateY(1px)}
+.essais{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0 20px;color:var(--encre-douce);font-size:.95rem}
+.essais button{font-size:.95rem;font-weight:600;background:var(--surface);color:var(--encre);border:1px solid var(--trait);border-radius:999px;padding:6px 13px;cursor:pointer}
+.message{background:var(--surface);border:1px solid var(--trait);border-left:4px solid var(--jaune);border-radius:0 10px 10px 0;padding:12px 14px;margin:0}
+
+/* Carte d'embarquement */
+.billet{position:relative;display:grid;grid-template-columns:1fr 96px;background:#fff;color:var(--billet-encre);border-radius:var(--rayon);overflow:hidden;box-shadow:0 1px 0 rgba(21,35,63,.06),0 10px 26px -14px rgba(21,35,63,.45)}
+.billet::before,.billet::after{content:"";position:absolute;right:87px;width:18px;height:18px;border-radius:50%;background:var(--fond)}
+.billet::before{top:-9px}
+.billet::after{bottom:-9px}
+.billet-corps{padding:13px 16px 15px;border-right:2px dashed #C3CDDD;min-width:0}
+.b-tete{margin:0;font-size:.82rem;color:var(--billet-douce)}
+.b-num{margin:0 0 10px;font:700 2.7rem/1 var(--etroit);overflow-wrap:anywhere}
+.b-infos{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin:0}
+.b-infos div{min-width:0}
+.b-infos dt{font-size:.8rem;color:var(--billet-douce)}
+.b-infos dd{margin:0;font:600 1.2rem/1.15 var(--etroit);overflow-wrap:anywhere}
+.billet-talon{background:var(--ciel);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px 6px}
+.t-num{margin:0;font:700 2.5rem/1 var(--etroit)}
+.t-lib{margin:2px 0 0;font-size:.85rem}
+.billet.sans-fin .billet-talon{background:#C53030}
+.b-texte{margin:0;font-size:.95rem}
+.b-cycle{margin:8px 0 0;font:600 1.15rem var(--etroit);color:#B42626;overflow-wrap:anywhere}
+.note{margin:12px 0 0;font-size:.95rem;color:var(--encre-douce)}
+
+/* Courbe */
+.courbe{margin:16px 0 0;background:var(--surface);border:1px solid var(--trait);border-radius:var(--rayon);padding:12px 12px 8px}
+.courbe figcaption{font-size:.85rem;color:var(--encre-douce);margin-bottom:4px}
+.courbe svg{display:block;width:100%;height:auto;overflow:visible}
+.aire{fill:var(--ciel-vif);opacity:.12}
+.trace{fill:none;stroke:var(--ciel-vif);stroke-width:2;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:0;animation:trace 1.4s ease-out}
+.sol{stroke:var(--trait);stroke-width:1}
+.pic{fill:var(--signal);stroke:var(--billet-encre);stroke-width:1.5}
+.etiq{font:600 13px var(--etroit);fill:var(--encre)}
+.etiq-douce{font:500 12px var(--texte);fill:var(--encre-douce)}
+@keyframes trace{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+
+details{margin-top:12px}
+summary{cursor:pointer;font-weight:600;color:var(--ciel-vif);padding:4px 0}
+.suite{margin:6px 0 0;font:500 1.02rem/1.5 var(--etroit);max-height:220px;overflow:auto;background:var(--surface);border:1px solid var(--trait);border-radius:10px;padding:10px 12px;overflow-wrap:anywhere}
+
+/* Historique */
+.historique h2,.pnp h2{font:700 1.3rem/1.2 var(--etroit);margin:28px 0 8px}
+.historique ol{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.historique li{display:flex;justify-content:space-between;gap:12px;background:var(--surface);border:1px solid var(--trait);border-radius:10px;padding:7px 12px;font:600 1.1rem var(--etroit)}
+.historique li span:first-child{overflow-wrap:anywhere;min-width:0}
+.historique li span:last-child{color:var(--encre-douce);white-space:nowrap}
+
+.savoir{margin:28px 0 0;padding:13px 16px;background:var(--surface);border-left:4px solid var(--signal);border-radius:0 10px 10px 0}
+
+/* Course des algorithmes */
+.curseur{width:100%;margin:14px 0 0;accent-color:var(--ciel-vif)}
+.axe{position:relative;height:20px;margin:22px 15px 4px;font-size:.8rem;color:var(--encre-douce)}
+.axe span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.axe span:last-child{transform:translateX(-100%)}
+.algos{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.algo{background:var(--surface);border:1px solid var(--trait);border-radius:var(--rayon);padding:12px 14px 13px}
+.algo-tete{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.algo h3{font:700 1.25rem/1.15 var(--etroit);margin:0}
+.formule{font:600 1.1rem var(--etroit);color:var(--ciel-vif);white-space:nowrap}
+.algo-desc{margin:2px 0 10px;font-size:.92rem;color:var(--encre-douce)}
+.piste{position:relative;height:12px;border-radius:6px;background:var(--fond);overflow:hidden}
+.barre{height:100%;border-radius:6px;background:var(--vert);transition:width .35s ease,background-color .35s ease}
+.barre.lent{background:var(--jaune)}
+.barre.tres-lent{background:var(--rouge)}
+.tic{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--surface);opacity:.75}
+.algo-chiffres{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:8px 0 0;font:600 1.1rem/1.2 var(--etroit)}
+.duree{text-align:right}
+.univers{margin:4px 0 0;font-size:.92rem;font-weight:600;color:var(--rouge)}
+.univers:empty{display:none}
+.echelle{margin:14px 0 0;font-size:.9rem;color:var(--encre-douce)}
+.pnp{margin-top:24px;padding:4px 16px 16px;border-radius:var(--rayon);background:var(--ciel);color:#fff}
+.pnp p{margin:0 0 8px}
+.pnp p:last-child{margin-bottom:0}
+
+@media (prefers-reduced-motion: reduce){
+  .trace{animation:none}
+  .barre{transition:none}
+}
+</style>
+</head>
+<body>
+<header class="entete">
+  <div class="entete-int">
+    <h1>Labo des algorithmes</h1>
+    <nav class="onglets" role="tablist" aria-label="Outils">
+      <button role="tab" id="t-vol" aria-selected="true" aria-controls="p-vol">Vol de Syracuse</button>
+      <button role="tab" id="t-course" aria-selected="false" aria-controls="p-course" tabindex="-1">Course des algorithmes</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ===================== VOL DE SYRACUSE ===================== -->
+  <section id="p-vol" role="tabpanel" aria-labelledby="t-vol">
+    <p class="intro">Choisissez un nombre entier et appliquez la règle jusqu'à atterrir à 1.</p>
+    <div class="regles">
+      <p><b>Pair</b>divisez par 2</p>
+      <p><b>Impair</b>multipliez par 3, puis ajoutez 1</p>
+      <p><b>1</b>atterrissage, le vol est terminé</p>
+    </div>
+
+    <form id="f-vol" class="saisie" autocomplete="off" novalidate>
+      <label for="n-vol">Nombre de départ</label>
+      <div class="ligne">
+        <input id="n-vol" type="text" inputmode="numeric" enterkeyhint="go" placeholder="par exemple 7">
+        <button type="submit" class="btn">Décoller</button>
+      </div>
+    </form>
+    <div class="essais">
+      <span>Essayez</span>
+      <button type="button" data-n="7">7</button>
+      <button type="button" data-n="27">27</button>
+      <button type="button" data-n="871">871</button>
+    </div>
+
+    <div id="sortie-vol" aria-live="polite"></div>
+
+    <section class="historique" id="historique" hidden>
+      <h2>Vos vols, du plus long au plus court</h2>
+      <ol id="liste-vols"></ol>
+    </section>
+
+    <p class="savoir">Tous les nombres testés jusqu'ici finissent par atterrir à 1. Mais personne n'a jamais démontré que c'est vrai pour <em>tous</em> les nombres : c'est la conjecture de Syracuse.</p>
+  </section>
+
+  <!-- ===================== COURSE DES ALGORITHMES ===================== -->
+  <section id="p-course" role="tabpanel" aria-labelledby="t-course" hidden>
+    <p class="intro">Quatre algorithmes, quatre façons de travailler. Choisissez combien de cartes (ou de pièces) il faut traiter et regardez combien de temps chacun met.</p>
+
+    <form id="f-course" class="saisie" autocomplete="off" novalidate>
+      <label for="n-course">Nombre de cartes ou de pièces : n</label>
+      <div class="ligne">
+        <input id="n-course" type="text" inputmode="numeric" enterkeyhint="done" value="16">
+      </div>
+      <input id="r-course" class="curseur" type="range" min="1" max="100" value="16" aria-label="Choisir n entre 1 et 100">
+    </form>
+    <div class="essais">
+      <span>Valeurs</span>
+      <button type="button" data-c="16">16</button>
+      <button type="button" data-c="60">60</button>
+      <button type="button" data-c="1000">1 000</button>
+      <button type="button" data-c="1000000">1 000 000</button>
+    </div>
+    <p id="msg-course" class="message" hidden></p>
+
+    <div class="axe" id="axe" aria-hidden="true"></div>
+    <ul class="algos" id="algos"></ul>
+
+    <p class="echelle">L'échelle des barres est spéciale : chaque fois que la durée est multipliée par 10, la barre avance du même pas. On suppose qu'une instruction élémentaire dure 1 nanoseconde (un milliardième de seconde), ordre de grandeur pour un processeur actuel. En 1 ns, la lumière parcourt environ 30 cm.</p>
+
+    <aside class="pnp">
+      <h2>Le butin des pirates</h2>
+      <p>Essayer tous les partages d'un butin de n pièces demande 2ⁿ essais. Vérifier un partage proposé ne demande qu'environ n additions.</p>
+      <p>Quand une solution se vérifie rapidement, existe-t-il toujours une méthode rapide pour la trouver ? C'est la question « P = NP ? », formulée en 1971 et toujours sans réponse. La résoudre rapporte un prix d'un million de dollars.</p>
+    </aside>
+  </section>
+</main>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- Outils d'affichage ---------- */
+var FINE = " ";          // espace fine insécable (milliers)
+var INS = " ";           // espace insécable
+var SUP = {"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹","-":"⁻"};
+
+function groupe(txt){          // "-1234567" -> "−1 234 567"
+  var neg = txt.charAt(0) === "-";
+  var d = neg ? txt.slice(1) : txt;
+  d = d.replace(/\B(?=(\d{3})+(?!\d))/g, FINE);
+  return (neg ? "−" : "") + d;
+}
+function exposant(e){ return String(e).split("").map(function(c){ return SUP[c]; }).join(""); }
+function decimal(x, dec){      // 36.50 -> "36,5"
+  var s = x.toFixed(dec);
+  if (s.indexOf(".") >= 0) s = s.replace(/0+$/, "").replace(/\.$/, "");
+  return s.replace(".", ",");
+}
+function nombre(x){            // nombre réel lisible
+  if (x >= 100) return groupe(String(Math.round(x)));
+  if (x >= 10) return decimal(x, 1);
+  return decimal(x, 2);
+}
+function scientifique(L){      // affiche 10^L sous la forme « 1,2 × 10¹⁸ »
+  var e = Math.floor(L);
+  var m = Math.round(Math.pow(10, L - e) * 10) / 10;
+  if (m >= 10){ m = 1; e += 1; }
+  return decimal(m, 1) + INS + "×" + INS + "10" + exposant(e);
+}
+function deuxChiffres(x){      // arrondi à 2 chiffres significatifs
+  var p = Math.pow(10, Math.floor(Math.log10(x)) - 1);
+  return Math.round(x / p) * p;
+}
+
+/* ---------- Onglets ---------- */
+var onglets = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+function ouvrir(id){
+  onglets.forEach(function(b){
+    var actif = b.id === id;
+    b.setAttribute("aria-selected", actif ? "true" : "false");
+    b.tabIndex = actif ? 0 : -1;
+    document.getElementById(b.getAttribute("aria-controls")).hidden = !actif;
+  });
+}
+onglets.forEach(function(b, i){
+  b.addEventListener("click", function(){
+    ouvrir(b.id);
+    try { history.replaceState(null, "", b.id === "t-course" ? "#course" : "#vol"); } catch(e){}
+  });
+  b.addEventListener("keydown", function(e){
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    var j = (i + (e.key === "ArrowRight" ? 1 : -1) + onglets.length) % onglets.length;
+    ouvrir(onglets[j].id); onglets[j].focus();
+  });
+});
+if (location.hash === "#course") ouvrir("t-course");
+
+/* ======================================================
+   VOL DE SYRACUSE
+   ====================================================== */
+var LIMITE_ETAPES = 100000;
+
+function lireEntier(brut){
+  var s = brut.trim().replace(/[\s'’  ]/g, "").replace(/^[−–]/, "-").replace(/^\+/, "");
+  if (s === "") return { erreur: "vide" };
+  var dec = /^(-?\d+)[.,](\d*)$/.exec(s);
+  if (dec){
+    if (/^0*$/.test(dec[2])) s = dec[1];          // 12,0 est un entier
+    else return { erreur: "virgule", texte: brut.trim() };
+  }
+  if (!/^-?\d+$/.test(s)) return { erreur: "texte" };
+  if (s.replace("-", "").replace(/^0+(?=\d)/, "").length > 40) return { erreur: "long" };
+  return { n: BigInt(s) };
+}
+
+function calculerVol(n){
+  var valeurs = [n], x = n;
+  if (n >= 1n){
+    var montees = 0, descentes = 0;
+    while (x !== 1n){
+      if (x % 2n === 0n){ x = x / 2n; descentes++; }
+      else { x = 3n * x + 1n; montees++; }
+      valeurs.push(x);
+      if (valeurs.length > LIMITE_ETAPES) return { type: "interrompu", valeurs: valeurs };
+    }
+    return { type: "atterri", valeurs: valeurs, montees: montees, descentes: descentes };
+  }
+  // n ≤ 0 : les valeurs restent ≤ 0 et n'atteignent jamais 1 → on détecte la boucle
+  var vus = new Map();
+  for (var i = 0; i < LIMITE_ETAPES; i++){
+    var cle = x.toString();
+    if (vus.has(cle)){
+      return { type: "boucle", valeurs: valeurs.slice(0, i + 1), cycle: valeurs.slice(vus.get(cle), i) };
+    }
+    vus.set(cle, i);
+    x = (x % 2n === 0n) ? x / 2n : 3n * x + 1n;
+    valeurs.push(x);
+  }
+  return { type: "interrompu", valeurs: valeurs };
+}
+
+function pluriel(k, mot){ return k < 2 ? mot : mot + "s"; }   // 0 et 1 au singulier
+
+function courbe(valeurs){
+  var W = 340, H = 150, G = 6, B = 128;   // largeur, hauteur, marge gauche, ligne du sol
+  var nums = valeurs.map(function(v){ return Number(v); });
+  var max = Math.max.apply(null, nums);
+  var iMax = nums.indexOf(max);
+  var dx = (W - 2 * G) / (nums.length - 1);
+  var pts = nums.map(function(v, i){
+    return [G + i * dx, B - (v / max) * (B - 22)];
+  });
+  var d = "M" + pts.map(function(p){ return p[0].toFixed(1) + " " + p[1].toFixed(1); }).join(" L");
+  var aire = d + " L" + pts[pts.length - 1][0].toFixed(1) + " " + B + " L" + G + " " + B + " Z";
+  var px = pts[iMax][0], py = pts[iMax][1];
+  var ancre = px > W * 0.7 ? "end" : (px < W * 0.3 ? "start" : "middle");
+  var etapes = valeurs.length - 1;
+  return '<figure class="courbe"><figcaption>Altitude à chaque étape</figcaption>' +
+    '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Courbe du vol : altitude maximale ' + groupe(valeurs[iMax].toString()) + ' à l\'étape ' + iMax + '">' +
+      '<path class="aire" d="' + aire + '"/>' +
+      '<line class="sol" x1="0" y1="' + B + '" x2="' + W + '" y2="' + B + '"/>' +
+      '<path class="trace" pathLength="1" d="' + d + '"/>' +
+      '<circle class="pic" cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="5"/>' +
+      '<text class="etiq" x="' + px.toFixed(1) + '" y="' + (py - 10).toFixed(1) + '" text-anchor="' + ancre + '">' + groupe(valeurs[iMax].toString()) + '</text>' +
+      '<text class="etiq-douce" x="' + G + '" y="' + (H - 4) + '">départ</text>' +
+      '<text class="etiq-douce" x="' + (W - G) + '" y="' + (H - 4) + '" text-anchor="end">étape ' + etapes + '</text>' +
+    '</svg></figure>';
+}
+
+function suite(valeurs, fin){
+  var txt = valeurs.map(function(v){ return groupe(v.toString()); }).join(" → ");
+  return '<details><summary>Voir les ' + groupe(String(valeurs.length)) + ' valeurs du vol</summary><p class="suite">' + txt + (fin || "") + '</p></details>';
+}
+
+var historique = new Map();
+function majHistorique(){
+  var liste = Array.from(historique.entries()).sort(function(a, b){ return b[1] - a[1]; });
+  var html = liste.map(function(e){
+    var duree = e[1] === Infinity ? "sans fin" : groupe(String(e[1])) + " " + pluriel(e[1], "étape");
+    return '<li><span>' + groupe(e[0]) + '</span><span>' + duree + '</span></li>';
+  }).join("");
+  document.getElementById("liste-vols").innerHTML = html;
+  document.getElementById("historique").hidden = liste.length < 2;
+}
+
+var sortieVol = document.getElementById("sortie-vol");
+
+function lancer(brut){
+  var lu = lireEntier(brut);
+  if (lu.erreur){
+    var msg = {
+      vide: "Entrez un nombre entier, par exemple 7.",
+      texte: "Entrez uniquement des chiffres, par exemple 27.",
+      long: "Choisissez un nombre de 40 chiffres au plus.",
+      virgule: "« " + (lu.texte || "") + " » n'est pas un nombre entier : il n'est ni pair ni impair, donc la règle ne s'applique pas."
+    }[lu.erreur];
+    sortieVol.innerHTML = '<p class="message">' + msg + '</p>';
+    return;
+  }
+  var n = lu.n, r = calculerVol(n), nTxt = groupe(n.toString());
+
+  if (r.type === "boucle"){
+    var cyc = r.cycle.map(function(v){ return groupe(v.toString()); }).join(" → ") + " → " + groupe(r.cycle[0].toString()) + " → …";
+    sortieVol.innerHTML =
+      '<article class="billet sans-fin">' +
+        '<div class="billet-corps"><p class="b-tete">Vol n°</p><p class="b-num">' + nTxt + '</p>' +
+          '<p class="b-texte">Ce vol tourne en rond pour toujours :</p><p class="b-cycle">' + cyc + '</p></div>' +
+        '<div class="billet-talon"><p class="t-num">∞</p><p class="t-lib">sans fin</p></div>' +
+      '</article>' +
+      '<p class="note">Ce programme s\'est arrêté parce qu\'il a reconnu une valeur déjà vue. Sans cette précaution, il tournerait à l\'infini. Un algorithme doit se terminer pour toutes les entrées possibles, même celles que l\'on n\'avait pas prévues.</p>';
+    historique.set(n.toString(), Infinity); majHistorique();
+    return;
+  }
+  if (r.type === "interrompu"){
+    sortieVol.innerHTML = '<p class="message">Vol interrompu après ' + groupe(String(LIMITE_ETAPES)) + ' étapes sans atterrir.</p>';
+    return;
+  }
+
+  var etapes = r.valeurs.length - 1;
+  var max = r.valeurs[0], iMax = 0;
+  r.valeurs.forEach(function(v, i){ if (v > max){ max = v; iMax = i; } });
+
+  var html =
+    '<article class="billet">' +
+      '<div class="billet-corps"><p class="b-tete">Vol n°</p><p class="b-num">' + nTxt + '</p>' +
+        '<dl class="b-infos">' +
+          '<div><dt>Altitude max</dt><dd>' + groupe(max.toString()) + '</dd></div>' +
+          '<div><dt>Atteinte à l\'étape</dt><dd>' + iMax + '</dd></div>' +
+          '<div><dt>Montées (×3+1)</dt><dd>' + groupe(String(r.montees)) + '</dd></div>' +
+          '<div><dt>Descentes (÷2)</dt><dd>' + groupe(String(r.descentes)) + '</dd></div>' +
+        '</dl></div>' +
+      '<div class="billet-talon"><p class="t-num">' + groupe(String(etapes)) + '</p><p class="t-lib">' + pluriel(etapes, "étape") + '</p></div>' +
+    '</article>';
+  if (etapes === 0) html += '<p class="note">Vous êtes déjà à l\'arrivée : 1 est l\'aéroport d\'atterrissage.</p>';
+  else html += courbe(r.valeurs) + suite(r.valeurs);
+  sortieVol.innerHTML = html;
+  historique.set(n.toString(), etapes); majHistorique();
+}
+
+var champVol = document.getElementById("n-vol");
+document.getElementById("f-vol").addEventListener("submit", function(e){
+  e.preventDefault(); lancer(champVol.value); champVol.blur();
+});
+document.querySelectorAll("[data-n]").forEach(function(b){
+  b.addEventListener("click", function(){ champVol.value = b.dataset.n; lancer(b.dataset.n); });
+});
+
+/* ======================================================
+   COURSE DES ALGORITHMES
+   ====================================================== */
+var L_AN = Math.log10(31557600e9);                 // 1 an (365,25 j) en ns
+var L_UNIVERS = Math.log10(13.8e9) + L_AN;         // âge de l'Univers (13,8 milliards d'années) en ns
+var L_ECHELLE = 28;                                // la barre pleine = 10^28 ns
+var N_MAX = 1000000000;
+
+var ALGOS = [
+  { nom: "Carte du milieu", formule: "⌊log₂ n⌋ + 1",
+    desc: "On retourne la carte du milieu et on élimine la moitié des cartes à chaque fois (cartes triées).",
+    exact: function(n){ return BigInt(n.toString(2).length); },
+    L: function(n){ return Math.log10(n.toString(2).length); } },
+  { nom: "Une par une", formule: "n",
+    desc: "On retourne les cartes dans l'ordre jusqu'à la bonne. Vérifier un partage du butin demande aussi environ n instructions.",
+    exact: function(n){ return BigInt(n); },
+    L: function(n){ return Math.log10(n); } },
+  { nom: "Chaque carte contre chaque autre", formule: "n²",
+    desc: "On compare chaque carte à toutes les autres, par exemple pour repérer des doublons : environ n² comparaisons.",
+    exact: function(n){ return BigInt(n) * BigInt(n); },
+    L: function(n){ return 2 * Math.log10(n); } },
+  { nom: "Tous les partages du butin", formule: "2ⁿ",
+    desc: "Chaque pièce va dans le tas A ou dans le tas B : 2 × 2 × … × 2 = 2ⁿ partages à essayer.",
+    exact: function(n){ return n <= 49 ? 2n ** BigInt(n) : null; },
+    L: function(n){ return n * Math.log10(2); } }
+];
+
+function texteInstructions(exact, L){
+  if (exact !== null && exact.toString().length <= 15){
+    return groupe(exact.toString()) + " " + (exact === 1n ? "instruction" : "instructions");
+  }
+  return "≈" + INS + scientifique(L) + " instructions";
+}
+
+function texteDuree(L){   // L = log10(durée en ns)
+  if (L < 3) return nombre(Math.pow(10, L)) + " ns";
+  if (L < 6) return nombre(Math.pow(10, L - 3)) + " µs";
+  if (L < 9) return nombre(Math.pow(10, L - 6)) + " ms";
+  var s = Math.pow(10, L - 9);
+  if (s < 60) return nombre(s) + " s";
+  if (s < 3600) return nombre(s / 60) + " min";
+  if (s < 86400) return nombre(s / 3600) + " h";
+  if (s < 31557600){ var j = s / 86400; return nombre(j) + (j < 2 ? " jour" : " jours"); }
+  var La = L - L_AN;
+  if (La < 6){ var a = Math.pow(10, La); return nombre(a) + (a < 2 ? " an" : " ans"); }
+  return "≈" + INS + scientifique(La) + " ans";
+}
+
+function texteUnivers(L){
+  if (L < L_UNIVERS) return "";
+  var r = L - L_UNIVERS;
+  var fois = r < 6 ? groupe(String(deuxChiffres(Math.pow(10, r)))) : scientifique(r);
+  return "Plus long que l'âge de l'Univers : environ " + fois + " fois son âge.";
+}
+
+/* Construction du tableau */
+var REPERES = [
+  { L: 9, nom: "1 s" },
+  { L: L_AN, nom: "1 an" },
+  { L: L_UNIVERS, nom: "Univers" }
+];
+function pct(L){ return Math.min(L / L_ECHELLE, 1) * 100; }
+document.getElementById("axe").innerHTML = REPERES.map(function(r){
+  return '<span style="left:' + pct(r.L).toFixed(2) + '%">' + r.nom + '</span>';
+}).join("");
+var tics = REPERES.map(function(r){ return '<span class="tic" style="left:' + pct(r.L).toFixed(2) + '%"></span>'; }).join("");
+document.getElementById("algos").innerHTML = ALGOS.map(function(a, i){
+  return '<li class="algo">' +
+    '<div class="algo-tete"><h3>' + a.nom + '</h3><span class="formule">' + a.formule + '</span></div>' +
+    '<p class="algo-desc">' + a.desc + '</p>' +
+    '<div class="piste"><div class="barre" id="barre-' + i + '"></div>' + tics + '</div>' +
+    '<p class="algo-chiffres"><span id="ops-' + i + '"></span><span class="duree" id="duree-' + i + '"></span></p>' +
+    '<p class="univers" id="univers-' + i + '"></p>' +
+  '</li>';
+}).join("");
+
+function majCourse(n){
+  ALGOS.forEach(function(a, i){
+    var L = a.L(n);
+    var barre = document.getElementById("barre-" + i);
+    barre.style.width = Math.max(pct(L), 1.5) + "%";
+    barre.className = "barre" + (L >= L_AN ? " tres-lent" : (L >= 9 ? " lent" : ""));
+    document.getElementById("ops-" + i).textContent = texteInstructions(a.exact(n), L);
+    document.getElementById("duree-" + i).textContent = texteDuree(L);
+    document.getElementById("univers-" + i).textContent = texteUnivers(L);
+  });
+}
+
+var champC = document.getElementById("n-course");
+var curseur = document.getElementById("r-course");
+var msgC = document.getElementById("msg-course");
+
+function choisir(brut, depuisCurseur){
+  var s = String(brut).trim().replace(/[\s'’  ]/g, "");
+  if (s === "") { msgC.hidden = true; return; }
+  if (!/^\d+$/.test(s) || Number(s) < 1 || Number(s) > N_MAX){
+    msgC.textContent = "Choisissez un nombre entier entre 1 et 1 000 000 000.";
+    msgC.hidden = false; return;
+  }
+  msgC.hidden = true;
+  var n = Number(s);
+  if (!depuisCurseur){ curseur.value = Math.min(n, 100); }
+  majCourse(n);
+}
+champC.addEventListener("input", function(){ choisir(champC.value, false); });
+curseur.addEventListener("input", function(){ champC.value = curseur.value; choisir(curseur.value, true); });
+document.getElementById("f-course").addEventListener("submit", function(e){ e.preventDefault(); champC.blur(); });
+document.querySelectorAll("[data-c]").forEach(function(b){
+  b.addEventListener("click", function(){ champC.value = groupe(b.dataset.c); choisir(b.dataset.c, false); });
+});
+majCourse(16);
+
+})();
+</script>
+</body>
+</html>
